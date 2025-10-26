@@ -1,4 +1,4 @@
--- Active: 1760887119542@@localhost@3306@alx_book_store
--- Active: 1760884686331@@localhost@3306@mysql
-USE alx_book_store;  -- select the database
+-- FILE: task_3.sql
+-- This script lists all tables in the database currently selected or passed as an argument.
+
 SHOW TABLES;

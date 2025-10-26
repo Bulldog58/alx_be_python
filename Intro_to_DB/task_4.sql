@@ -1,12 +1,5 @@
--- Active: 1760887119542@@localhost@3306@alx_book_store
--- task_4.sql
-SELECT COLUMN_NAME,
-       COLUMN_TYPE,
-       IS_NULLABLE,
-       COLUMN_DEFAULT,
-       COLUMN_KEY,
-       EXTRA
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_SCHEMA = 'alx_book_store'
-  AND TABLE_NAME = 'books';
--- This query retrieves metadata about the columns in the 'books' table
+-- FILE: task_4.sql
+-- This script displays the table definition for the 'BOOKS' table in SQL Server,
+-- which includes column information, constraints, and additional details.
+
+EXEC sp_help 'BOOKS';

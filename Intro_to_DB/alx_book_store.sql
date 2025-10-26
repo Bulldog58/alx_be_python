@@ -1,43 +1,69 @@
--- Active: 1760885099262@@localhost@3306@mysql
--- Create Authors table first (referenced by Books)
-CREATE TABLE Authors (
-    author_id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
-);
+-- FILE: alx_book_store.sql
 
--- Create Customers table (referenced by Orders)
-CREATE TABLE Customers (
-    customer_id INT PRIMARY KEY,
-    customer_name VARCHAR(215) NOT NULL,
-    email VARCHAR(215) NOT NULL,
-    address TEXT NOT NULL
-);
+-- 1. Create the database if it doesn't already exist
+IF DB_ID(N'ALX_BOOK_STORE') IS NULL
+BEGIN
+    CREATE DATABASE ALX_BOOK_STORE;
+END;
+GO
 
--- Now create Books table (references Authors)
-CREATE TABLE Books (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(130) NOT NULL,
-    author_id INT NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES Authors(author_id),
-    price DOUBLE NOT NULL,
-    publication_date DATE NOT NULL
-);
+-- 2. Use the newly created database
+USE ALX_BOOK_STORE;
+GO
 
--- Create Orders table (references Customers)
-CREATE TABLE Orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT NOT NULL,
-    order_date DATE NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+-- 3. Create the Authors table
+IF OBJECT_ID(N'dbo.AUTHORS','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.AUTHORS (
+        AUTHOR_ID INT PRIMARY KEY,
+        AUTHOR_NAME VARCHAR(215) NOT NULL
+    );
+END;
 
--- Create Order_Details table (references Orders and Books)
-CREATE TABLE Order_Details (
-    orderdetails_id INT PRIMARY KEY,
-    order_id INT NOT NULL,
-    book_id INT NOT NULL,
-    quantity DOUBLE NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
+-- 4. Create the Books table
+IF OBJECT_ID(N'dbo.BOOKS','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.BOOKS (
+        BOOK_ID INT PRIMARY KEY,
+        TITLE VARCHAR(130) NOT NULL,
+        AUTHOR_ID INT NOT NULL,
+        PRICE DECIMAL(10, 2) NOT NULL, -- Changed DOUBLE to DECIMAL for currency
+        PUBLICATION_DATE DATE,
+        CONSTRAINT FK_BOOKS_AUTHORS FOREIGN KEY (AUTHOR_ID) REFERENCES dbo.AUTHORS(AUTHOR_ID)
+    );
+END;
 
+-- 5. Create the Customers table
+IF OBJECT_ID(N'dbo.CUSTOMERS','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.CUSTOMERS (
+        CUSTOMER_ID INT PRIMARY KEY,
+        CUSTOMER_NAME VARCHAR(215) NOT NULL,
+        EMAIL VARCHAR(215) NOT NULL UNIQUE,
+        ADDRESS VARCHAR(MAX)
+    );
+END;
+
+-- 6. Create the Orders table
+IF OBJECT_ID(N'dbo.ORDERS','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ORDERS (
+        ORDER_ID INT PRIMARY KEY,
+        CUSTOMER_ID INT NOT NULL,
+        ORDER_DATE DATE NOT NULL,
+        CONSTRAINT FK_ORDERS_CUSTOMERS FOREIGN KEY (CUSTOMER_ID) REFERENCES dbo.CUSTOMERS(CUSTOMER_ID)
+    );
+END;
+
+-- 7. Create the Order_Details table (often named OrderDetails or OrderItems)
+IF OBJECT_ID(N'dbo.ORDER_DETAILS','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ORDER_DETAILS (
+        ORDERDETAILID INT PRIMARY KEY,
+        ORDER_ID INT NOT NULL,
+        BOOK_ID INT NOT NULL,
+        QUANTITY INT NOT NULL, -- Changed DOUBLE to INT since quantity is typically an integer
+        CONSTRAINT FK_ORDERDETAILS_ORDERS FOREIGN KEY (ORDER_ID) REFERENCES dbo.ORDERS(ORDER_ID),
+        CONSTRAINT FK_ORDERDETAILS_BOOKS FOREIGN KEY (BOOK_ID) REFERENCES dbo.BOOKS(BOOK_ID)
+    );
+END;
